@@ -4,10 +4,13 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
 const router = express.Router(); 
 
+
+const secretKey = '12345678'; // Ensure this is defined
 // Register User
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password, repassword, phoneNumber } = req.body;
+    
 
     // Validate inputs
     if (!name || !email || !password || !repassword || !phoneNumber) {
