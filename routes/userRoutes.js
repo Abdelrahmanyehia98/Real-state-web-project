@@ -9,9 +9,9 @@ const router = express.Router();
 // Register User
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, repassword, phoneNumber } = req.body;
+    const { name, email, password, repassword, phoneNumber, role } = req.body;
     
-    if (!name || !email || !password || !repassword || !phoneNumber) {
+    if (!name || !email || !password || !repassword || !phoneNumber || !role) {
       return res.status(400).json({ message: 'All fields are required' });
     }
     if (password !== repassword) {
@@ -23,13 +23,16 @@ router.post('/register', async (req, res) => {
           'Password must be at least 8 characters, contain an uppercase letter, a lowercase letter, a number, and a special character',
       });
     }
+    if (role !== 'user' && role !== 'admin') {
+      return res.status(400).json({ message: 'Invalid role. Allowed roles: user, admin' });
+    }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'Email already in use' });
     }
 
-    const user = new User({ name, email, password, phoneNumber });
+    const user = new User({ name, email, password, phoneNumber,role });
     await user.save();
 
     res.status(201).json({ message: 'User registered successfully' });
@@ -53,9 +56,9 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id, role: user.role }, process.env.SECRET_KEY, { expiresIn: '1w' });
 
-    res.status(200).json({ message: 'Login successful', token });
+    res.status(200).json({ message: 'Login successful', token,role: user.role });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
