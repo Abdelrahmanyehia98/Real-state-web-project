@@ -18,7 +18,7 @@ router.post('/Properties', authMiddleware, async (req, res) => {
       area: req.body.area,
       price: req.body.price,
       negotiationable: req.body.negotiationable,
-      createdBy: req.user.userId, 
+      createdBy: req.user.userId,
     });
 
     const savedProperty = await property.save();
@@ -28,6 +28,8 @@ router.post('/Properties', authMiddleware, async (req, res) => {
     res.status(400).json({ error: 'An error occurred while creating property' });
   }
 });
+
+
 
 // Get All Properties
 router.get('/Properties', async (req, res) => {
@@ -56,21 +58,21 @@ router.delete('/Properties/:id', authMiddleware, async (req, res) => {
   }
 });
 
-router.get('/Properties/:id',async (req,res) =>{
+router.get('/Properties/:id', async (req, res) => {
   try {
     const propertiesId = await Property.findById(req.params.id).populate('createdBy', 'name email role phoneNumber');
     res.json(propertiesId);
   } catch (err) {
     res.status(500).json({ error: 'An error occurred while fetching properties' });
-  } 
- });
+  }
+});
 
- // Get Properties by User ID
+// Get Properties by User ID
 router.get('/Properties/user/:userId', async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Only admins can delete properties' });
-    }
+    // if (req.user.role !== 'admin') {
+    // return res.status(403).json({ error: 'Only admins can delete properties' });
+    // }
 
     const userId = req.params.userId;
 
@@ -94,7 +96,7 @@ router.get('/search', async (req, res) => {
     if (bedroom) filters.bedroom = bedroom;
     if (minPrice || maxPrice) {
       filters.price = {};
-      if (minPrice) filters.price.$gte = parseFloat(minPrice); 
+      if (minPrice) filters.price.$gte = parseFloat(minPrice);
       if (maxPrice) filters.price.$lte = parseFloat(maxPrice);
     }
 

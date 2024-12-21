@@ -2,8 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors')
-const path = require('path');
 const bodyParser = require('body-parser');
+const imageRoutes = require('./routes/imagesRoutes');
 
 const app = express();
 app.use(cors());
@@ -20,4 +20,6 @@ mongoose.connect(process.env.MONGO_URI, {
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/properties', require('./routes/propertyRoutes'));
 
-app.listen(5000, () => console.log(`Server running on port 5000`));
+app.use('/api/images', imageRoutes);
+
+app.listen(process.env.PORT, () => console.log(`Server running on port 5000`));
